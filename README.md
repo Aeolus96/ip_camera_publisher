@@ -2,9 +2,9 @@
 
 This ROS package streams video from an IP camera using the RTSP protocol, scales down the images, converts it to ROS Image format, and publishes them to a ROS topic.
 
->!! Higher resolutions will slow down the streaming significantly. !!
+> !! Higher resolutions will slow down the streaming significantly. !!
 
-Example reference using the default (tested with) streaming resolution:
+Reference example using the default streaming resolution:
 
 - Camera -> RTSP stream out
 - 2304x1296x3 = 8,957,952 Bytes/frame x 10 fps ~ 90 MB/s x 8bits ~ 720 Mb/s
@@ -12,7 +12,9 @@ Example reference using the default (tested with) streaming resolution:
 - 1152x648x3 = 2,239,488 Bytes/frame x 10 fps ~ 22 MB/s x 8bits ~ 179 Mb/s
 - Total bandwidth used by this stream = 720 Mb/s + 179 Mb/s ~ 900 Mb/s
 
-Most inexpensive/common network setups unless specified are limited to 1000/100/10 Mbit/s per ethernet interface. Hardware acceleration (like NVIDIA CUDA) and additional ethernet hardware can be added to achieve higher resolutions.
+> Most inexpensive/common network setups unless specified are limited to 1000/100/10 Mbit/s per ethernet interface.
+
+Performance can be improved by using hardware acceleration and stream compression using codecs like H264, H265 and HEVC. This package was tested with an IP camera that supports H264 and H265. Change the `ffmpeg_cmd` if you want to use other codecs. You can try to get a test feed running by using [FFmpeg](https://www.ffmpeg.org/) directly and then adding that command to the `ffmpeg_cmd` variable.
 
 ## Prerequisites
 
@@ -41,14 +43,13 @@ Most inexpensive/common network setups unless specified are limited to 1000/100/
 2. Build the ROS package:
 
    ```bash
-   cd ~/<your_ros_workspace>
-   catkin_make
+   catkin build ip_camera_publisher
    ```
 
 3. Source your ROS workspace:
 
    ```bash
-   source devel/setup.bash
+   source ~/<your_ros_workspace>/devel/setup.bash
    ```
 
 ## Launching the IP Camera Publisher Node
@@ -56,7 +57,7 @@ Most inexpensive/common network setups unless specified are limited to 1000/100/
 Use the provided launch file to start the IP camera publisher node. Adjust the launch file parameters according to your IP camera settings.
 
 ```bash
-roslaunch ip_camera_publisher ip_camera_publisher.launch
+roslaunch ip_camera_publisher camera.launch
 ```
 
 ## Launch File Parameters
@@ -75,7 +76,7 @@ roslaunch ip_camera_publisher ip_camera_publisher.launch
 ## Example Launch with Custom Parameters
 
 ```bash
-roslaunch ip_camera_publisher ip_camera_publisher.launch username:=<your_username> password:=<your_password> stream_path:=<your_stream_path> image_topic:=<your_image_topic> image_scale:=<0.5>
+roslaunch ip_camera_publisher camera.launch username:=<your_username> password:=<your_password> stream_path:=<your_stream_path> image_topic:=<your_image_topic> image_scale:=<0.5>
 ```
 
 ## License

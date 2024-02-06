@@ -5,7 +5,7 @@
     <arg name="stream_path" default="192.168.0.41/h264Preview_01_main" />
 
     <!-- ROS Image topic for publishing frames -->
-    <arg name="image_topic" default="/camera/image_raw" />
+    <arg name="image_topic" default="/ip_camera/image_raw" />
 
     <!-- Scaling factor for resizing frames -->
     <arg name="image_scale" default="0.5" />
@@ -14,8 +14,8 @@
     <!-- Launch node -->
     <node pkg="ip_camera_publisher" name="ip_camera_publisher" type="convert.py">
         <param name="rtsp_stream_url"
-            value="rtsp://${arg username}:${arg password}@${arg stream_path}" />
-        <param name="image_topic" value="${arg image_topic}" />
+            value="$(eval 'rtsp://' + arg('username') + arg('password') + '@' + arg('stream_path'))" />
+        <param name="image_topic" value="$(arg image_topic)" />
         <param name="image_scale" value="$(arg image_scale)" />
 
     </node>

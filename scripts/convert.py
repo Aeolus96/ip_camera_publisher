@@ -1,8 +1,11 @@
-import rospy
+#!/usr/bin/env python3
+
 import json
 import subprocess
+
 import cv2
 import numpy as np
+import rospy
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 
@@ -53,11 +56,12 @@ def convert_rtsp_to_opencv(url, width, height):
         "tcp",
         "-i",  # Specifies the input URL for the RTSP stream
         url,
-        "-pix_fmt",  # Sets the pixel format
-        "bgr24",
+        "-pix_fmt",  # Sets output pixel format
+        "bgr24",  # Camera feed is converted from yuv420p to bgr24
         "-an",  # Disables audio recording
-        "-vcodec",  # Sets the video codec
-        "rawvideo",
+        # TODO: Check if this input codec or output codec
+        "-vcodec",  # Sets the input video codec
+        "rawvideo",  # Camera feed is converted from h264 to rawvideo
         "-vf",  # Adding video filter to scale down the images
         f"scale={width}:{height}",
         "-f",  # Specifies the output format
@@ -86,6 +90,8 @@ def convert_rtsp_to_opencv(url, width, height):
         frame = cv2.resize(frame, (1152, 648))  # Scale down to variable resolution?
 
         image_pub.publish(bridge.cv2_to_imgmsg(frame, "bgr8"))
+    
+    rospy.loginfo("IP Camera Stream: Stoping")
 
 
 if __name__ == "__main__":
@@ -93,13 +99,14 @@ if __name__ == "__main__":
 
     # Get the RTSP stream URL from the launch params
     try:
-        rtsp_stream_url = rospy.get_param("rtsp_stream_url")
-        image_topic = rospy.get_param("image_topic")
-        image_scale = rospy.get_param("image_scale")
+        rtsp_stream_url = rospy.get_param("~rtsp_stream_url")
+        image_topic = rospy.get_param("~image_topic")
+        image_scale = rospy.get_param("~image_scale")
         if image_scale > 1.0 or image_scale < 0.0:
             image_scale = 0.5
-    except KeyError:
+    except KeyError as e:
         # If error reading params, exit
+        rospy.logerr(e)
         rospy.logerr("Error: launch parameters error. Exiting __ip_camera_publisher__ ...")
         exit()
 
@@ -121,6 +128,7 @@ if __name__ == "__main__":
     # Scale down the frame dimensions
     width = int(width * image_scale)
     height = int(height * image_scale)
+    rospy.loginfo(f"Output Frame dimensions: {width}x{height}")
 
     # Convert RTSP stream to OpenCV image and publish
     convert_rtsp_to_opencv(rtsp_stream_url, width, height)
