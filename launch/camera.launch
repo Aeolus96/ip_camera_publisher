@@ -1,8 +1,11 @@
 <launch>
-    <!-- RTSP stream URL components -->
-    <arg name="username" default="admin" />
-    <arg name="password" default="I%3C3Robots" />
-    <arg name="stream_path" default="192.168.0.41/h264Preview_01_main" />
+    <!-- stream URL components -->
+    <arg name="protocol" default="rtsp" />
+    <arg name="username" default="user" />
+    <arg name="password" default="a1234567890z" />
+    <arg name="ip" default="192.168.0.41" />
+    <arg name="port" default="554" />
+    <arg name="stream_path" default="h264Preview_01_main" />
 
     <!-- ROS Image topic for publishing frames -->
     <arg name="image_topic" default="/ip_camera/image_raw" />
@@ -14,7 +17,7 @@
     <!-- Launch node -->
     <node pkg="ip_camera_publisher" name="ip_camera_publisher" type="convert.py">
         <param name="rtsp_stream_url"
-            value="$(eval 'rtsp://' + arg('username') + arg('password') + '@' + arg('stream_path'))" />
+            value="$(eval arg('protocol') + '://' + arg('username') + ':' + arg('password') + '@' + arg('ip') + ':' + arg('port') + '/' + arg('stream_path'))" />
         <param name="image_topic" value="$(arg image_topic)" />
         <param name="image_scale" value="$(arg image_scale)" />
 
