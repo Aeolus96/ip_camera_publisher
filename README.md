@@ -63,8 +63,8 @@ roslaunch ip_camera_publisher camera.launch
 ## Launch File Parameters
 
 - **`protocol`**: Stream protocol. (default: "rtsp")
-- **`username`**: Username for RTSP stream authentication (default: "admin").
-- **`password`**: Password for RTSP stream authentication (default: "I%3C3Robots").
+- **`username`**: Username for RTSP stream authentication (default: "user").
+- **`password`**: Password for RTSP stream authentication (default: "a1234567890z").
 - **`ip`**: Device IP address (default: "192.168.60.41")
 - **`port`**: Port on which the stream is running. Typical needs to be changed with the protocol (default: "554")
 - **`stream_path`**: Path to the RTSP stream on the IP camera (default: "h264Preview_01_main").
@@ -79,7 +79,7 @@ roslaunch ip_camera_publisher camera.launch
 ## Example Launch with Custom Parameters
 
 ```bash
-roslaunch ip_camera_publisher camera.launch username:=<your_username> password:=<your_password> stream_path:=<your_stream_path> image_topic:=<your_image_topic> image_scale:=<0.5>
+roslaunch ip_camera_publisher camera.launch username:=<your_username> password:=<your_password> ip:=<ip_addr> image_topic:=<your_image_topic> image_scale:=<0.5>
 ```
 
 ## License
