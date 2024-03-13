@@ -4,7 +4,7 @@ This ROS package streams video from an IP camera using the RTSP protocol, scales
 
 > !! Higher resolutions will slow down the streaming significantly. !!
 
-Reference example using the default streaming resolution:
+Reference example using the default streaming resolution without any compression:
 
 - Camera -> RTSP stream out
 - 2304x1296x3 = 8,957,952 Bytes/frame x 10 fps ~ 90 MB/s x 8bits ~ 720 Mb/s
@@ -62,9 +62,12 @@ roslaunch ip_camera_publisher camera.launch
 
 ## Launch File Parameters
 
+- **`protocol`**: Stream protocol. (default: "rtsp")
 - **`username`**: Username for RTSP stream authentication (default: "admin").
 - **`password`**: Password for RTSP stream authentication (default: "I%3C3Robots").
-- **`stream_path`**: Path to the RTSP stream on the IP camera (default: "192.168.0.41/h264Preview_01_main").
+- **`ip`**: Device IP address (default: "192.168.60.41")
+- **`port`**: Port on which the stream is running. Typical needs to be changed with the protocol (default: "554")
+- **`stream_path`**: Path to the RTSP stream on the IP camera (default: "h264Preview_01_main").
 - **`image_topic`**: ROS topic to publish the images (default: "/camera/image_raw").
 - **`image_scale`**: Scaling factor for resizing frames (default: 0.5). Keep this between 0.0 and 1.0.
 
