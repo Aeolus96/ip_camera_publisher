@@ -1,22 +1,15 @@
 <launch>
     <!-- stream URL components -->
-    <!-- removed for ease -->
-
-    <!-- ROS Image topic for publishing frames -->
+    <arg name="rtsp_stream_url" default="rtsp://192.168.0.5:5005/routecam" />
     <arg name="image_topic" default="/ip_camera/image_raw" />
-
-    <!-- Scaling factor for resizing frames -->
     <arg name="image_scale" default="1.0" />
     <!-- Keep this between 0.0 and 1.0 -->
 
     <!-- Launch node -->
     <node pkg="ip_camera_publisher" name="ip_camera_publisher" type="route_cam.py">
-
-        <param name="rtsp_stream_url" value="rtsp://192.168.0.5:5005/routecam"/>
-        <param name="image_topic"
-            value="$(arg image_topic)" />
+        <param name="rtsp_stream_url" value="$(arg rtsp_stream_url)" />
+        <param name="image_topic" value="$(arg image_topic)" />
         <param name="image_scale" value="$(arg image_scale)" />
-
     </node>
 
 </launch>

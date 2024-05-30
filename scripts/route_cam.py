@@ -33,7 +33,6 @@ def get_dimensions(url):
         video_info = json.loads(ffprobe_process)
         width = video_info["streams"][0]["width"]
         height = video_info["streams"][0]["height"]
-        rospy.loginfo(f"Raw {video_info}")
         rospy.logdebug(f"Raw Stream dimensions: {width}x{height}")
         return width, height
     except subprocess.CalledProcessError as e:
@@ -58,13 +57,9 @@ def convert_rtsp_to_opencv(url, width, height):
         "-i",  # Specifies the input URL for the RTSP stream
         url,
         "-pix_fmt",  # Sets output pixel format
-        # "yuv420p",
         "bgr24",  # Camera feed is converted from yuv420p to bgr24
         "-an",  # Disables audio recording
         "-vcodec",  # Sets the input video codec
-        # "h264",
-        # "-tune",
-        # "zerolatency",
         "rawvideo",  # Camera feed is converted from h264 to rawvideo
         "-vf",  # Adding video filter to scale down the images
         f"scale={width}:{height}",
@@ -90,9 +85,14 @@ def convert_rtsp_to_opencv(url, width, height):
             rospy.logerr(f"Error reading frame: {e}")
             rospy.loginfo("IP Camera Stream not accessible. Exiting __ip_camera_publisher__ ...")
             break
+        
         frame = raw_frame.reshape((height, width, 3))  # OpenCV image frame
-        frame = cv2.resize(frame, (1920, 1080))  # Scale down to variable resolution?
-
+        frame = cv2.resize(frame, (width, height))
+        
+        # Other image processing if needed:
+        
+        
+        # -------------------------------
         image_pub.publish(bridge.cv2_to_imgmsg(frame, "bgr8"))
 
     rospy.loginfo("IP Camera Stream: Stoping")
@@ -105,11 +105,8 @@ if __name__ == "__main__":
     try:
         rtsp_stream_url = rospy.get_param("~rtsp_stream_url")
         image_topic = rospy.get_param("~image_topic")
-        image_scale = rospy.get_param("~image_scale")
-        if image_scale > 1.0 or image_scale < 0.0:
-            image_scale = 0.5
-    except KeyError as e:
-        # If error reading params, exit
+        image_scale = min(max(rospy.get_param("~image_scale"), 0.0), 1.0)
+    except KeyError as e:  # If error reading params, exit
         rospy.logerr(e)
         rospy.logerr("Error: launch parameters error. Exiting __ip_camera_publisher__ ...")
         exit()
@@ -118,9 +115,9 @@ if __name__ == "__main__":
     bridge = CvBridge()
     image_pub = rospy.Publisher(image_topic, Image, queue_size=1)
 
-    # Default Frame Dimensions - 2304x1296 (lowest clear stream supported by the camera used for testing)
-    width = 2304
-    height = 1296
+    # Default Frame Dimensions - 1920x1080
+    width = 1920
+    height = 1080
 
     # Get the frame dimensions from the RTSP stream
     stream_width, stream_height = get_dimensions(rtsp_stream_url)
